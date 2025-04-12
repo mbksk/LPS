@@ -1,85 +1,70 @@
-import java.util.Scanner;
-public class exp8 {
-public static void main(String[] args) {
-char[] stack = new char[20];
-char[] ip = new char[20];
-char[][][] opt = new char[10][10][1];
-char[] ter = new char[10];
-int i, j, k, n, top = 0, col = 0, row = 0;
-Scanner scanner = new Scanner(System.in);
-for (i = 0; i < 10; i++) {
-stack[i] = 0;
-ip[i] = 0;
-for (j = 0; j < 10; j++) {
-opt[i][j][0] = 0;
-}
-}
-System.out.print("Enter the no. of terminals:");
-n = scanner.nextInt();
-System.out.print("\nEnter the terminals:");
-ter = scanner.next().toCharArray();
-System.out.println("\nEnter the table values:");
-for (i = 0; i < n; i++) {
-for (j = 0; j < n; j++) {
-System.out.printf("\nEnter the value for %c %c:", ter[i], ter[j]);
-opt[i][j] = scanner.next().toCharArray();
-}
-}
-System.out.println("\nOPERATOR PRECEDENCE TABLE:");
-for (i = 0; i < n; i++) {
-System.out.print("\t" + ter[i]);
-}
-System.out.println();
-for (i = 0; i < n; i++) {
-System.out.println();
-System.out.print(ter[i]);
-for (j = 0; j < n; j++) {
-System.out.print("\t" + opt[i][j][0]);
-}
-}
-stack[top] = '$';
-System.out.print("\nEnter the input string:");
-String input = scanner.next();
-ip = input.toCharArray();
-i = 0;
-System.out.println("\nSTACK\t\t\tINPUT STRING\t\t\tACTION");
-System.out.print("\n" + String.valueOf(stack) + "\t" + input + "\t\t");
-while (i <= input.length()) {
-for (k = 0; k < n; k++) {
-if (stack[top] == ter[k])
-col = k;
-if (ip[i] == ter[k])
-row = k;
-}
-if ((stack[top] == '$') && (ip[i] == '$')) {
-System.out.println("String is accepted");
-break;
-} else if ((opt[col][row][0] == '<') || (opt[col][row][0] == '=')) {
-stack[++top] = opt[col][row][0];
-stack[++top] = ip[i];
-System.out.println("Shift " + ip[i]);
-i++;
-} else {
-if (opt[col][row][0] == '>') {
-while (stack[top] != '<') {
---top;
-}
-top = top - 1;
-System.out.println("Reduce");
-} else {
-System.out.println("\nString is not accepted");
-break;
-}
-}
-System.out.println();
-for (k = 0; k <= top; k++) {
-System.out.print(stack[k]);
-}
-System.out.print("\t\t\t");
-for (k = i; k < input.length(); k++) {
-System.out.print(ip[k]);
-}
-System.out.print("\t\t\t");
-}
-}
+import java.util.*;
+
+public class Operator_Parser {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("No. of terminals: ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Terminals: ");
+        String t = sc.nextLine();
+
+        String[][] p = new String[n][n];
+
+        System.out.println("Precedence Table: ");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                p[i][j] = sc.next();
+            }
+        }
+
+        System.out.println("OPERATOR PRECEDENCE TABLE:");
+        System.out.print("\t");
+        for (int i = 0; i < n; i++) {
+            System.out.print(t.charAt(i) + "\t");
+        }
+        System.out.println();
+        for (int i = 0; i < n; i++) {
+            System.out.print(t.charAt(i) + "\t");
+            for (int j = 0; j < n; j++) {
+                System.out.print(p[i][j] + "\t");
+            }
+            System.out.println();
+        }
+        
+        System.out.print("String : ");
+        String inp=sc.next()+"$";
+        String stk="$";
+        System.out.println("STACK\t\tINPUT\t\tACTION");
+        while(true){
+            String c1=stk.charAt(stk.length()-1)+"";
+            String c2=inp.charAt(0)+"";
+            if(c1.equals("E")) c1=stk.charAt(stk.length()-2)+"";
+            int i1=t.indexOf(c1);
+            int i2=t.indexOf(c2);
+            
+            if (i1 == -1 || i2 == -1) {
+                System.out.println("Rejected.");
+                break;
+            }
+            
+            if(p[i1][i2].equals("A")) {
+                System.out.println("Accepted.");
+                break;
+            }
+            
+            if(p[i1][i2].equals("<")){
+                stk+=c2;
+                inp=inp.substring(1);
+                System.out.println(stk+"\t\t"+inp+"\t\tSHIFT"+c2);
+            }else{
+                stk=stk.substring(0,stk.length()-1);
+                if(!c1.equals("i")) stk=stk.substring(0,stk.length()-2);
+                stk+="E";
+                System.out.println(stk+"\t\t"+inp+"\t\tREDUCE");
+            }
+        }
+    }
 }
